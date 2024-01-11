@@ -1,23 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
+import UserForm from "./pages/UserForm";
+import axios from "axios";
+import UploadFiles from "./components/UploadFiles";
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+function App() { 
+  const [fileData, setFileData] = useState([]);
 
-function App() {
+   const getAllFiles = async() => {
+    const data = await axios.get(`${REACT_APP_BACKEND_URL}/user`);
+    if (data?.data) {
+      setFileData(data?.data);
+    }
+  };
+
+  useEffect(() => {
+    getAllFiles();
+    return () => {};
+  }, []);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <UserForm getAllFiles={ getAllFiles} />
+      {fileData.length > 0 && <UploadFiles fileData={ fileData} />}
     </div>
   );
 }
